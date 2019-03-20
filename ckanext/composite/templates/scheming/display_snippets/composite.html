@@ -19,12 +19,18 @@
              {% set value = composite_dict[key] %}
          {% endif %}
 
-         {% if first_key_written %}&nbsp{% endif %}<b>{{ label_dict[key] }}:</b>
+         <b>{{ label_dict[key] }}:</b>
          {% set first_key_written = true %}
-         {% if h.composite_is_mail(value) %}
-             {{ value.split('@')[0] }}<span style="display:none">foo</span>(at){{ value.split('@')[1] }}
+
+         {% if value is iterable and value is not string %}
+           {{ value | reject('equalto', '') | join(', ') }}
          {% else %}
+           {% if h.composite_is_mail(value) %}
+             {{ value.split('@')[0] }}<span style="display:none">foo</span>(at){{ value.split('@')[1] }}
+           {% else %}
              {{ value }}
+           {% endif %}
          {% endif %}
+         <br>
       {% endif %}
    {%endfor%}
