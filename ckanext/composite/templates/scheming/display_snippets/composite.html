@@ -3,34 +3,32 @@
 {% set name_list = h.composite_get_name_list(field.subfields) %}
 {% set composite_dict = h.composite_get_as_dict(data[field.field_name]) %}
 
-   {% for key in name_list%}
-      {% if  composite_dict[key]|length >0 %}
-         {% if choices_dict[key]|length > 0  %}
-			{% if h.composite_is_list(composite_dict[key])  %}
-				{%- set labels = [] -%}
-				{% for item in composite_dict[key] %}
-					{%- do labels.append(h.scheming_choices_label(choices_dict[key], item)) -%}
-				{% endfor %}
-				{% set value = h.composite_join_list(labels) %}                 	
-			{% else %}                 
-				{% set value = h.scheming_choices_label(choices_dict[key], composite_dict[key]) %} 
-			{% endif %}
-         {% else %}
-             {% set value = composite_dict[key] %}
-         {% endif %}
-
-         <b>{{ label_dict[key] }}:</b>
-         {% set first_key_written = true %}
-
-         {% if value is iterable and value is not string %}
-           {{ value | reject('equalto', '') | join(', ') }}
-         {% else %}
-           {% if h.composite_is_mail(value) %}
-             {{ value.split('@')[0] }}<span style="display:none">foo</span>(at){{ value.split('@')[1] }}
-           {% else %}
-             {{ value }}
-           {% endif %}
-         {% endif %}
-         <br>
+{% for key in name_list%}
+  {% if composite_dict[key]|length >0 %}
+    {% if choices_dict[key]|length > 0 %}
+      {% if h.composite_is_list(composite_dict[key]) %}
+        {%- set labels = [] -%}
+        {% for item in composite_dict[key] %}
+          {%- do labels.append(h.scheming_choices_label(choices_dict[key], item)) -%}
+        {% endfor %}
+        {% set value = h.composite_join_list(labels) %}
+      {% else %}
+        {% set value = h.scheming_choices_label(choices_dict[key], composite_dict[key]) %}
       {% endif %}
-   {%endfor%}
+    {% else %}
+      {% set value = composite_dict[key] %}
+    {% endif %}
+    <b>{{ label_dict[key] }}:</b>
+    {% if value is iterable and value is not string %}
+      {{ value | reject('equalto', '') | join(', ') }}
+    {% else %}
+      {% if h.composite_is_mail(value) %}
+        {{ value.split('@')[0] }}<span style="display:none">foo</span>(at){{ value.split('@')[1] }}
+      {% else %}
+        {{ value }}
+      {% endif %}
+    {% endif %}
+    <br>
+  {% endif %}
+{% endfor %}
+
