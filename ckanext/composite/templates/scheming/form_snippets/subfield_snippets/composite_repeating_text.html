@@ -9,23 +9,42 @@
 {% endif %}
 
 {% set subfield_index = 0 %}
-{%- for value in values -%}
-  {% set subfield_index = loop.index %}
-  {% set field_name=name + '-' ~ loop.index %}
+{% if values is iterable and values is not string %}
+  {%- for value in values -%}
+    {% set subfield_index = loop.index %}
+    {% set field_name=name + '-' ~ loop.index %}
+    {% set classes = ['control-full'] %}
+    {%- call form.input_block(
+              for='field-' + field_name,
+              label=h.scheming_language_text(subfield.label) + subfields_repeating_label + ' ' ~ subfield_index,
+              error=errors[field_name],
+              classes=classses,
+              control_classes=[],
+              extra_html="",
+              is_required=h.scheming_field_required(subfield)
+      ) -%}
+      <input id="{{ id or name }}" type="{{ type }}" name="{{ name }}"
+              value="{{ value | empty_and_escape }}" placeholder="{{ placeholder }}"
+              {{ form.attributes(attrs) }} class="{{ composite_classes }}" />
+      {% if subfield_index>1 %}
+        {%- snippet 'scheming/form_snippets/subfield_snippets/composite_help_text.html', field=subfield -%}
+      {% endif %}
+    {% endcall %}
+  {%- endfor -%}
+{% else %}
+  {% set field_name=name %}
   {% set classes = ['control-full'] %}
   {%- call form.input_block(
             for='field-' + field_name,
-            label=h.scheming_language_text(subfield.label) + subfields_repeating_label + ' ' ~ subfield_index,
+            label=h.scheming_language_text(subfield.label) + subfields_repeating_label + ' 1',
             error=errors[field_name],
             classes=classses,
             control_classes=[],
             extra_html="",
-            is_required=h.scheming_field_required(subfield)) -%}
-              <input id="{{ id or name }}" type="{{ type }}" name="{{ name }}"
-                 value="{{ value | empty_and_escape }}" placeholder="{{ placeholder }}"
-                 {{ form.attributes(attrs) }} class="{{ composite_classes }}" />
-              {% if subfield_index>1 %}
-                {%- snippet 'scheming/form_snippets/subfield_snippets/composite_help_text.html', field=subfield -%}
-              {% endif %}
+            is_required=h.scheming_field_required(subfield)
+    ) -%}
+    <input id="{{ id or name }}" type="{{ type }}" name="{{ name }}"
+            value="{{ values | empty_and_escape }}" placeholder="{{ placeholder }}"
+            {{ form.attributes(attrs) }} class="{{ composite_classes }}" />
   {% endcall %}
-{%- endfor -%}
+{% endif %}
