@@ -24,7 +24,9 @@
       <dd>
         {% if value is iterable and value is not string %}
           {% for item in value %}
-            {{ item }}<br/>
+            {% if item %}
+              {{ item }}<br/>
+            {% endif %}
           {% endfor %}
         {% else %}
           {% if h.composite_is_mail(value) %}
