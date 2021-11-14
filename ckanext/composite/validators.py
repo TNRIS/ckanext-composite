@@ -53,8 +53,6 @@ def composite_group2json(field, schema):
             for name, text in extras.items():
                 if not name.startswith(prefix):
                     continue
-                # if not text:
-                #    continue
                 subfield = name.split('-', 1)[1]
                 found[subfield] = text
                 extras_to_delete += [name]
@@ -105,9 +103,6 @@ def composite_repeating_group2json(field, schema):
                 if not name.startswith(prefix):
                     continue
 
-                # if not text:
-                #    continue
-
                 index = int(name.split('-', 2)[1])
                 subfield = name.split('-', 2)[2]
                 extras_to_delete += [name]
@@ -131,9 +126,10 @@ def composite_repeating_group2json(field, schema):
                             if type(schema_subfield.get('label', '')) is dict:
                                 subfield_label = schema_subfield.get('field_name', '') + " " + str(index)
                             else:
-                                subfield_label = schema_subfield.get('label',
-                                                                     schema_subfield.get('field_name', '')) + " " + str(
-                                    index)
+                                subfield_label = schema_subfield.get(
+                                    'label',
+                                    schema_subfield.get('field_name', '')
+                                ) + " " + str(index)
 
                             subfield_value = item.get(schema_subfield.get('field_name', ''), "")
                             composite_not_empty_subfield(key, subfield_label, subfield_value, errors)
