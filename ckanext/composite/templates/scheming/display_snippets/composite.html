@@ -4,7 +4,7 @@
 {% set composite_dict = h.composite_get_as_dict(data[field.field_name]) %}
 
 <dl class="composite-display-snippet">
-{% for key in name_list%}
+{% for key in name_list %}
   {% if composite_dict[key]|length > 0 %}
     {% if choices_dict[key]|length > 0 %}
       {% if h.composite_is_list(composite_dict[key]) %}
@@ -32,7 +32,10 @@
           {% if h.composite_is_mail(value) %}
             {{ value.split('@')[0] }}<span style="display:none">foo</span>(at){{ value.split('@')[1] }}
           {% else %}
-            {{ value }}
+            {{ value.replace('(&#8224;)', '') }}
+            {% if '(&#8224;)' in value %}
+              (&#8224;)
+            {% endif %}
           {% endif %}
         {% endif %}
       </dd>

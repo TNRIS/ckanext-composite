@@ -1,7 +1,9 @@
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
-
+from ckan.lib.webassets_tools import add_public_path
+import os
 from ckanext.composite import validators, helpers
+
 
 class CompositePlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
@@ -12,13 +14,20 @@ class CompositePlugin(plugins.SingletonPlugin):
     def update_config(self, config_):
         toolkit.add_template_directory(config_, 'templates')
         toolkit.add_public_directory(config_, 'public')
-        toolkit.add_resource('fanstatic', 'composite')
+
+        toolkit.add_resource('public', 'composite')
+
+        asset_path = os.path.join(
+            os.path.dirname(__file__), 'public'
+        )
+        add_public_path(asset_path, '/')
+
 
     # IValidators
     def get_validators(self):
-        return { "composite_group2json": validators.composite_group2json ,
-                 #"composite_group2json_output": validators.composite_group2json_output,
-                 "composite_repeating_group2json":validators.composite_repeating_group2json }
+        return {"composite_group2json": validators.composite_group2json,
+                # "composite_group2json_output": validators.composite_group2json_output,
+                "composite_repeating_group2json": validators.composite_repeating_group2json }
 
     # ITemplateHelpers
     def get_helpers(self):
